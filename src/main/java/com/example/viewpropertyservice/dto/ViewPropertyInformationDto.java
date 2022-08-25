@@ -28,10 +28,6 @@ public class ViewPropertyInformationDto {
   private List<FlatAmenitiesDTO> flatAmenities; //instead of List<FlatAmenities>
   private String category; //from Category object
   private String type; //instead of type id in property entity (private Type type) fetch type from the type table as you have made a mapping to the type table
-  private String streetLine; // from address object
-  private String additionalStreet;// address object
-  private String city;// address object
-  private int postCode;// address object
-  private String state;// address object
+  private AddressDTO address;
 
 }

@@ -1,5 +1,6 @@
 package com.example.viewpropertyservice.service;
 
+import com.example.viewpropertyservice.dto.AddressDTO;
 import com.example.viewpropertyservice.dto.FlatAmenitiesDTO;
 import com.example.viewpropertyservice.dto.ImageDTO;
 import com.example.viewpropertyservice.dto.SocietyAmenitiesDTO;
@@ -31,11 +32,7 @@ public class ViewIndividualPropertyService {
     viewPropertyInformationDto.setFlatAmenities(listOfStringAsFlatAmenitiesWithoutId(property));
     viewPropertyInformationDto.setCategory(property.getCategory().getCategory());
     viewPropertyInformationDto.setType(property.getType().getType());
-    viewPropertyInformationDto.setStreetLine(property.getAddress().getStreetLine());
-    viewPropertyInformationDto.setAdditionalStreet(property.getAddress().getAdditionalStreet());
-    viewPropertyInformationDto.setCity(property.getAddress().getCity());
-    viewPropertyInformationDto.setPostCode(property.getAddress().getPostCode());
-    viewPropertyInformationDto.setState(property.getAddress().getState());
+    viewPropertyInformationDto.setAddress(convertToAddressDTO(property));
     return viewPropertyInformationDto;
   }
 
@@ -76,5 +73,20 @@ public class ViewIndividualPropertyService {
     return societyAmenitiesDTOList;
 
   }
+
+
+  public AddressDTO convertToAddressDTO(Property property) {
+
+    AddressDTO addressDTO=new AddressDTO();
+    addressDTO.setStreetLine(property.getAddress().getStreetLine());
+    addressDTO.setAdditionalStreet(property.getAddress().getAdditionalStreet());
+    addressDTO.setCity(property.getAddress().getCity());
+    addressDTO.setState(property.getAddress().getState());
+    addressDTO.setPostCode(property.getAddress().getPostCode());
+
+    return addressDTO;
+
+  }
+
 
 }
