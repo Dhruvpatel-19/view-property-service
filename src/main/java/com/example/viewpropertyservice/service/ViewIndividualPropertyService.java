@@ -1,9 +1,12 @@
 package com.example.viewpropertyservice.service;
 
+import com.example.viewpropertyservice.dto.AddressDTO;
+import com.example.viewpropertyservice.dto.CategoryDTO;
 import com.example.viewpropertyservice.dto.FlatAmenitiesDTO;
 import com.example.viewpropertyservice.dto.ImageDTO;
 import com.example.viewpropertyservice.dto.SocietyAmenitiesDTO;
-import com.example.viewpropertyservice.dto.ViewPropertyInformationDto;
+import com.example.viewpropertyservice.dto.PropertyDTO;
+import com.example.viewpropertyservice.dto.TypeDTO;
 import com.example.viewpropertyservice.entity.FlatAmenities;
 import com.example.viewpropertyservice.entity.Image;
 import com.example.viewpropertyservice.entity.Property;
@@ -15,28 +18,24 @@ import java.util.List;
 @Service
 public class ViewIndividualPropertyService {
 
-  public ViewPropertyInformationDto convertAllThePropertyAttributesToDto(Property property) {
-    ViewPropertyInformationDto viewPropertyInformationDto = new ViewPropertyInformationDto();
-    viewPropertyInformationDto.setPropertyName(property.getPropertyName());
-    viewPropertyInformationDto.setPrice(property.getPrice());
-    viewPropertyInformationDto.setArea(property.getArea());
-    viewPropertyInformationDto.setAgeYears(property.getAgeYears());
-    viewPropertyInformationDto.setAction(property.getAction());
-    viewPropertyInformationDto.setFurnishing(property.getFurnishing());
-    viewPropertyInformationDto.setAvailableTo(property.getAvailableTo());
-    viewPropertyInformationDto.setAvailableFrom(property.getAvailableFrom());
-    viewPropertyInformationDto.setCreatedAt(property.getCreatedAt());
-    viewPropertyInformationDto.setImages(listOfImagesWithoutId(property));
-    viewPropertyInformationDto.setSocietyAmenities(listOfStringAsSocietyAmenitiesWithoutId(property));
-    viewPropertyInformationDto.setFlatAmenities(listOfStringAsFlatAmenitiesWithoutId(property));
-    viewPropertyInformationDto.setCategory(property.getCategory().getCategory());
-    viewPropertyInformationDto.setType(property.getType().getType());
-    viewPropertyInformationDto.setStreetLine(property.getAddress().getStreetLine());
-    viewPropertyInformationDto.setAdditionalStreet(property.getAddress().getAdditionalStreet());
-    viewPropertyInformationDto.setCity(property.getAddress().getCity());
-    viewPropertyInformationDto.setPostCode(property.getAddress().getPostCode());
-    viewPropertyInformationDto.setState(property.getAddress().getState());
-    return viewPropertyInformationDto;
+  public PropertyDTO convertAllThePropertyAttributesToDto(Property property) {
+    PropertyDTO PropertyDTO = new PropertyDTO();
+    PropertyDTO.setPropertyName(property.getPropertyName());
+    PropertyDTO.setPrice(property.getPrice());
+    PropertyDTO.setArea(property.getArea());
+    PropertyDTO.setAgeYears(property.getAgeYears());
+    PropertyDTO.setAction(property.getAction());
+    PropertyDTO.setFurnishing(property.getFurnishing());
+    PropertyDTO.setAvailableTo(property.getAvailableTo());
+    PropertyDTO.setAvailableFrom(property.getAvailableFrom());
+    PropertyDTO.setCreatedAt(property.getCreatedAt());
+    PropertyDTO.setImages(listOfImagesWithoutId(property));
+    PropertyDTO.setSocietyAmenities(listOfStringAsSocietyAmenitiesWithoutId(property));
+    PropertyDTO.setFlatAmenities(listOfStringAsFlatAmenitiesWithoutId(property));
+    PropertyDTO.setCategory(convertToCategoryDTO(property));
+    PropertyDTO.setType(convertToTypeDTO(property));
+    PropertyDTO.setAddress(convertToAddressDTO(property));
+    return PropertyDTO;
   }
 
   public List<ImageDTO> listOfImagesWithoutId(Property property) {
@@ -76,5 +75,34 @@ public class ViewIndividualPropertyService {
     return societyAmenitiesDTOList;
 
   }
+
+
+  public AddressDTO convertToAddressDTO(Property property) {
+
+    AddressDTO addressDTO=new AddressDTO();
+    addressDTO.setStreetLine(property.getAddress().getStreetLine());
+    addressDTO.setAdditionalStreet(property.getAddress().getAdditionalStreet());
+    addressDTO.setCity(property.getAddress().getCity());
+    addressDTO.setState(property.getAddress().getState());
+    addressDTO.setPostCode(property.getAddress().getPostCode());
+
+    return addressDTO;
+
+  }
+
+
+  public CategoryDTO convertToCategoryDTO(Property property){
+    CategoryDTO categoryDTO=new CategoryDTO();
+    categoryDTO.setCategory(property.getCategory().getCategory());
+    return categoryDTO;
+  }
+  public TypeDTO convertToTypeDTO(Property property){
+
+    TypeDTO typeDTO=new TypeDTO();
+    typeDTO.setType(property.getType().getType());
+    return typeDTO;
+
+  }
+
 
 }
