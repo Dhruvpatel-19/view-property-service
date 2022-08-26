@@ -16,6 +16,8 @@ public class PropertyDTO {
   private String furnishing;
   private Date availableTo;
   private Date availableFrom;
+  private String parkingAvailability;
+  private boolean isSold;
   private LocalDateTime createdAt;
   private List<ImageDTO> images;//list of strings of images instead of List<Image> images
   private List<SocietyAmenitiesDTO> societyAmenities;// instead of List<SocietyAmenities> societyAmenities
@@ -23,5 +25,4 @@ public class PropertyDTO {
   private CategoryDTO category;
   private TypeDTO type;
   private AddressDTO address;
-
 }
