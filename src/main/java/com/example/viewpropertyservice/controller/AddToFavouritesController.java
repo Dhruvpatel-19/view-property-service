@@ -10,16 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/viewPropertyService")
@@ -54,14 +52,12 @@ public class AddToFavouritesController { //here we assume that we have JWT token
     }
 
       User user = userRepository.findByEmail(email); //get the email from token
-      Favourites favourites =new Favourites();
-      favourites.setCreatedAt(LocalDateTime.now());
-      Property property=propertyRepository.findByPropertyId(propertyId);
-      favourites.setProperty(property);
-      List<Favourites> favList= user.getFavourites(); //get the list of favourites entity.
-      favList.add(favourites);// add the newly created favourite object to the favourites list
-      user.setFavourites(favList);
-    return new ResponseEntity<User>(userRepository.save(user), HttpStatus.OK);
+      Favourites favourites = new Favourites();
+      Property property = propertyRepository.findByPropertyId(propertyId);
+      List<Property> propertyList = favourites.getPropertyList();
+      propertyList.add(property);
+      favourites.setPropertyList(propertyList);
+      return new ResponseEntity<User>(userRepository.save(user), HttpStatus.OK);
   }
 
 

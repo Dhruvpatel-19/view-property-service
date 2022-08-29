@@ -1,6 +1,5 @@
 package com.example.viewpropertyservice.dto;
 
-import javax.persistence.Column;
 import lombok.Data;
 
 @Data

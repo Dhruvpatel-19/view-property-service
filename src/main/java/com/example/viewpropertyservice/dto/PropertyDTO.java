@@ -1,9 +1,10 @@
 package com.example.viewpropertyservice.dto;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
-import lombok.Data;
 
 @Data
 public class PropertyDTO {

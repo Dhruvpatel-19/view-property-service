@@ -1,17 +1,12 @@
 package com.example.viewpropertyservice.service;
 
-import com.example.viewpropertyservice.dto.AddressDTO;
-import com.example.viewpropertyservice.dto.CategoryDTO;
-import com.example.viewpropertyservice.dto.FlatAmenitiesDTO;
-import com.example.viewpropertyservice.dto.ImageDTO;
-import com.example.viewpropertyservice.dto.SocietyAmenitiesDTO;
-import com.example.viewpropertyservice.dto.PropertyDTO;
-import com.example.viewpropertyservice.dto.TypeDTO;
+import com.example.viewpropertyservice.dto.*;
 import com.example.viewpropertyservice.entity.FlatAmenities;
 import com.example.viewpropertyservice.entity.Image;
 import com.example.viewpropertyservice.entity.Property;
 import com.example.viewpropertyservice.entity.SocietyAmenities;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 
