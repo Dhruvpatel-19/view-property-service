@@ -1,17 +1,61 @@
 package com.example.viewpropertyservice.service;
 
 import com.example.viewpropertyservice.dto.*;
-import com.example.viewpropertyservice.entity.FlatAmenities;
-import com.example.viewpropertyservice.entity.Image;
-import com.example.viewpropertyservice.entity.Property;
-import com.example.viewpropertyservice.entity.SocietyAmenities;
+import com.example.viewpropertyservice.entity.*;
+import com.example.viewpropertyservice.jwt.JwtUtil;
+import com.example.viewpropertyservice.repository.FavouritesRepository;
+import com.example.viewpropertyservice.repository.PropertyRepository;
+import com.example.viewpropertyservice.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
-public class ViewIndividualPropertyService {
+public class ViewPropertyService {
+
+  @Autowired
+  private JwtUtil jwtUtil;
+
+  @Autowired
+  private UserRepository userRepository;
+
+  @Autowired
+  private PropertyRepository propertyRepository;
+
+  @Autowired
+  private FavouritesRepository favouritesRepository;
+  public String addToFavourite(HttpServletRequest request , int propertyId) throws Exception {
+    String requestTokenHeader = request.getHeader("Authorization");
+    String jwtToken = null;
+    String email = null;
+    if(requestTokenHeader!=null && requestTokenHeader.startsWith("Bearer ")) {
+      jwtToken = requestTokenHeader.substring(7);
+      try{
+        email = jwtUtil.extractUsername(jwtToken);
+      }catch (Exception e){
+        throw new Exception("User not found exception");
+      }
+
+      User user = userRepository.findByEmail(email);
+      Favourites favourites = user.getFavourites();
+      Property property = propertyRepository.findByPropertyId(propertyId);
+      Set<Property> propertySet = favourites.getPropertyList();
+      propertySet.add(property);
+      favourites.setPropertyList(propertySet);
+
+      user.setFavourites(favourites);
+
+      //favouritesRepository.save(favourites);
+      userRepository.save(user);
+
+      return "added to favourite successfully";
+    }
+    return "some error occurred while addFavourite";
+  }
 
   public PropertyDTO convertAllThePropertyAttributesToDto(Property property) {
     PropertyDTO PropertyDTO = new PropertyDTO();
