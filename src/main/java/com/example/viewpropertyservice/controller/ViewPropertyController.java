@@ -33,4 +33,9 @@ public class ViewPropertyController {
     public String addFavourite(HttpServletRequest request,@PathVariable("propertyId")int id) throws Exception {
         return viewPropertyService.addToFavourite(request , id);
     }
+
+    @GetMapping("/removeFromFavourite/{propertyId}")
+    public String removeFromFavourite(HttpServletRequest request ,@PathVariable("propertyId") int id) throws Exception {
+        return viewPropertyService.removeFromFavourite(request , id);
+    }
 }

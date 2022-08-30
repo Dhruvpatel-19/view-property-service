@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Service
+@Transactional
 public class ViewPropertyService {
 
   @Autowired
@@ -42,12 +44,18 @@ public class ViewPropertyService {
 
       User user = userRepository.findByEmail(email);
       Favourites favourites = user.getFavourites();
+
       Property property = propertyRepository.findByPropertyId(propertyId);
       Set<Property> propertySet = favourites.getPropertyList();
-      propertySet.add(property);
-      favourites.setPropertyList(propertySet);
 
+      propertySet.add(property);
+
+      favourites.setPropertyList(propertySet);
       user.setFavourites(favourites);
+
+      for( Property property1 : favourites.getPropertyList()){
+        System.out.println("property name from favList  " + property1.getPropertyName());
+      }
 
       //favouritesRepository.save(favourites);
       userRepository.save(user);
@@ -55,6 +63,35 @@ public class ViewPropertyService {
       return "added to favourite successfully";
     }
     return "some error occurred while addFavourite";
+  }
+
+  public String removeFromFavourite(HttpServletRequest request , int propertyId) throws Exception{
+    String requestTokenHeader = request.getHeader("Authorization");
+    String jwtToken = null;
+    String email = null;
+    if(requestTokenHeader!=null && requestTokenHeader.startsWith("Bearer ")) {
+      jwtToken = requestTokenHeader.substring(7);
+      try {
+        email = jwtUtil.extractUsername(jwtToken);
+      } catch (Exception e) {
+        throw new Exception("User not found exception");
+      }
+      User user = userRepository.findByEmail(email);
+      Property property = propertyRepository.findByPropertyId(propertyId);
+
+      Favourites favourites = user.getFavourites();
+      Set<Property> propertySet = favourites.getPropertyList();
+
+      propertySet.remove(property);
+
+      favourites.setPropertyList(propertySet);
+      user.setFavourites(favourites);
+
+      userRepository.save(user);
+
+      return "remove from favourite list";
+     }
+    return "some error occurred while removeFromFavourite";
   }
 
   public PropertyDTO convertAllThePropertyAttributesToDto(Property property) {
