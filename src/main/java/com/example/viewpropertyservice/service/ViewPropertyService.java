@@ -30,6 +30,7 @@ public class ViewPropertyService {
 
   @Autowired
   private FavouritesRepository favouritesRepository;
+
   public String addToFavourite(HttpServletRequest request , int propertyId) throws Exception {
     String requestTokenHeader = request.getHeader("Authorization");
     String jwtToken = null;
@@ -42,22 +43,19 @@ public class ViewPropertyService {
         throw new Exception("User not found exception");
       }
 
-      User user = userRepository.findByEmail(email);
-      Favourites favourites = user.getFavourites();
-
       Property property = propertyRepository.findByPropertyId(propertyId);
-      Set<Property> propertySet = favourites.getPropertyList();
+      User user = userRepository.findByEmail(email);
+      List<Favourites> favouritesList = user.getFavPropertyList();
 
-      propertySet.add(property);
+      Favourites favourites = new Favourites();
+      favourites.setProperty(property);
+      favourites.setUser(user);
 
-      favourites.setPropertyList(propertySet);
-      user.setFavourites(favourites);
+      favouritesList.add(favourites);
 
-      for( Property property1 : favourites.getPropertyList()){
-        System.out.println("property name from favList  " + property1.getPropertyName());
-      }
+      user.setFavPropertyList(favouritesList);
 
-      //favouritesRepository.save(favourites);
+      favouritesRepository.save(favourites);
       userRepository.save(user);
 
       return "added to favourite successfully";
@@ -77,17 +75,10 @@ public class ViewPropertyService {
         throw new Exception("User not found exception");
       }
       User user = userRepository.findByEmail(email);
+
       Property property = propertyRepository.findByPropertyId(propertyId);
 
-      Favourites favourites = user.getFavourites();
-      Set<Property> propertySet = favourites.getPropertyList();
-
-      propertySet.remove(property);
-
-      favourites.setPropertyList(propertySet);
-      user.setFavourites(favourites);
-
-      userRepository.save(user);
+      favouritesRepository.deleteByUserAndProperty( user , property);
 
       return "remove from favourite list";
      }
