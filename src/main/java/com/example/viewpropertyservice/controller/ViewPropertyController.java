@@ -1,6 +1,7 @@
 package com.example.viewpropertyservice.controller;
 
 import com.example.viewpropertyservice.dto.AllPropertyDTO;
+import com.example.viewpropertyservice.dto.PropertyDTO;
 import com.example.viewpropertyservice.entity.Property;
 import com.example.viewpropertyservice.service.ViewPropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class ViewPropertyController {
     private ViewPropertyService viewPropertyService;
 
     @GetMapping("/getProperty/{propertyId}")
-    public Property getPropertyById(@PathVariable("propertyId") int propertyId) {
+    public PropertyDTO getPropertyById(@PathVariable("propertyId") int propertyId) {
         return viewPropertyService.getPropertyById(propertyId);
     }
 

@@ -1,8 +1,11 @@
 package com.example.viewpropertyservice.dto;
 
 import com.example.viewpropertyservice.entity.Address;
+import com.example.viewpropertyservice.entity.Image;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,7 +15,7 @@ public class AllPropertyDTO {
     private String propertyName;
     private String price;
     private String area;
-    private String image;
+    private List<Image> images;
     private boolean isSold;
     private Address address;
 

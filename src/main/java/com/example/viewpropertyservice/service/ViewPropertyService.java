@@ -1,8 +1,14 @@
 package com.example.viewpropertyservice.service;
 
-import com.example.viewpropertyservice.dto.*;
-import com.example.viewpropertyservice.entity.*;
+import com.example.viewpropertyservice.dto.AllPropertyDTO;
+import com.example.viewpropertyservice.dto.OwnerDTO;
+import com.example.viewpropertyservice.dto.PropertyDTO;
+import com.example.viewpropertyservice.entity.Favourites;
+import com.example.viewpropertyservice.entity.Owner;
+import com.example.viewpropertyservice.entity.Property;
+import com.example.viewpropertyservice.entity.User;
 import com.example.viewpropertyservice.jwt.JwtUtil;
+import com.example.viewpropertyservice.mapstruct.MapStructMapper;
 import com.example.viewpropertyservice.repository.FavouritesRepository;
 import com.example.viewpropertyservice.repository.OwnerRepository;
 import com.example.viewpropertyservice.repository.PropertyRepository;
@@ -14,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,8 +41,12 @@ public class ViewPropertyService {
   @Autowired
   private FavouritesRepository favouritesRepository;
 
-  public Property getPropertyById(int propertyId){
-    return propertyRepository.findByPropertyId(propertyId);
+  @Autowired
+  private MapStructMapper mapStructMapper;
+
+  public PropertyDTO getPropertyById(int propertyId){
+    Property property = propertyRepository.findByPropertyId(propertyId);
+    return mapStructMapper.propertyToPropertyDto(property);
   }
 
   public String addToFavourite(HttpServletRequest request , int propertyId) throws Exception {
@@ -77,24 +86,9 @@ public class ViewPropertyService {
         for(Favourites favourites : favouritesList){
           propertyList.add(favourites.getProperty());
         }
-      return propertyList.stream().map(this::toAllPropertyDTO).collect(Collectors.toList());
+      return propertyList.stream().map(property -> mapStructMapper.propertyToAllPropertyDto(property)).collect(Collectors.toList());
     }
     return null;
-  }
-
-  private AllPropertyDTO toAllPropertyDTO(Property property){
-
-    AllPropertyDTO allPropertyDTO = new AllPropertyDTO();
-
-    allPropertyDTO.setPropertyId(property.getPropertyId());
-    allPropertyDTO.setPropertyId(property.getPropertyId());
-    allPropertyDTO.setPropertyName(property.getPropertyName());
-    allPropertyDTO.setPrice(property.getPrice());
-    allPropertyDTO.setArea(property.getArea());
-    allPropertyDTO.setImage(property.getImages().get(0).getImage());
-    allPropertyDTO.setAddress(property.getAddress());
-
-    return allPropertyDTO;
   }
 
   private Object getOwnerOrUser(HttpServletRequest request) throws Exception {
@@ -119,6 +113,5 @@ public class ViewPropertyService {
     }
     return null;
   }
-
 
 }
