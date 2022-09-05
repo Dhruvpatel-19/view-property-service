@@ -7,6 +7,8 @@ import com.example.viewpropertyservice.entity.Favourites;
 import com.example.viewpropertyservice.entity.Owner;
 import com.example.viewpropertyservice.entity.Property;
 import com.example.viewpropertyservice.entity.User;
+import com.example.viewpropertyservice.exceptionhandler.PropertyNotFoundException;
+import com.example.viewpropertyservice.exceptionhandler.UserNotFoundException;
 import com.example.viewpropertyservice.jwt.JwtUtil;
 import com.example.viewpropertyservice.mapstruct.MapStructMapper;
 import com.example.viewpropertyservice.repository.FavouritesRepository;
@@ -45,14 +47,19 @@ public class ViewPropertyService {
   private MapStructMapper mapStructMapper;
 
   public PropertyDTO getPropertyById(int propertyId){
+    if(propertyRepository.findByPropertyId(propertyId)==null) throw new PropertyNotFoundException();
     Property property = propertyRepository.findByPropertyId(propertyId);
     return mapStructMapper.propertyToPropertyDto(property);
   }
 
   public String addToFavourite(HttpServletRequest request , int propertyId) throws Exception {
     User user = (User) getOwnerOrUser(request);
+    if(user==null) throw new UserNotFoundException();
     if(user !=null) {
+
       Property property = propertyRepository.findByPropertyId(propertyId);
+      if(property ==null) throw new PropertyNotFoundException();
+
       List<Favourites> favouritesList = user.getFavPropertyList();
 
       Favourites favourites = new Favourites();
@@ -70,6 +77,7 @@ public class ViewPropertyService {
 
   public String removeFromFavourite(HttpServletRequest request , int propertyId) throws Exception{
     User user = (User) getOwnerOrUser(request);
+    if(user==null) throw new UserNotFoundException();
     if(user!=null){
       Property property = propertyRepository.findByPropertyId(propertyId);
       favouritesRepository.deleteByUserAndProperty( user , property);
@@ -80,6 +88,7 @@ public class ViewPropertyService {
 
   public List<AllPropertyDTO> getAllFavourite(HttpServletRequest request) throws Exception {
     User user = (User) getOwnerOrUser(request);
+    if(user==null) throw new UserNotFoundException();
     List<Property> propertyList = new ArrayList<>();
     if(user!=null){
      List<Favourites> favouritesList = user.getFavPropertyList();
@@ -106,6 +115,7 @@ public class ViewPropertyService {
 
       User user = userRepository.findByEmail(email);
       Owner owner = ownerRepository.findByEmail(email);
+
       if(user!=null)
         return user;
       else
