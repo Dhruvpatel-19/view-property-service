@@ -1,14 +1,13 @@
 package com.example.viewpropertyservice.service;
 
 import com.example.viewpropertyservice.dto.AllPropertyDTO;
-import com.example.viewpropertyservice.dto.OwnerDTO;
+import com.example.viewpropertyservice.dto.FavouriteDTO;
 import com.example.viewpropertyservice.dto.PropertyDTO;
 import com.example.viewpropertyservice.entity.Favourites;
 import com.example.viewpropertyservice.entity.Owner;
 import com.example.viewpropertyservice.entity.Property;
 import com.example.viewpropertyservice.entity.User;
-import com.example.viewpropertyservice.exceptionhandler.PropertyNotFoundException;
-import com.example.viewpropertyservice.exceptionhandler.UserNotFoundException;
+import com.example.viewpropertyservice.exception.*;
 import com.example.viewpropertyservice.jwt.JwtUtil;
 import com.example.viewpropertyservice.mapstruct.MapStructMapper;
 import com.example.viewpropertyservice.repository.FavouritesRepository;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,74 +47,95 @@ public class ViewPropertyService {
   private MapStructMapper mapStructMapper;
 
   public PropertyDTO getPropertyById(int propertyId){
-    if(propertyRepository.findByPropertyId(propertyId)==null) throw new PropertyNotFoundException();
+    if(!propertyRepository.existsById(propertyId)){
+      throw new PropertyNotFoundException();
+    }
     Property property = propertyRepository.findByPropertyId(propertyId);
     return mapStructMapper.propertyToPropertyDto(property);
   }
 
-  public String addToFavourite(HttpServletRequest request , int propertyId) throws Exception {
+  public FavouriteDTO addToFavourite(HttpServletRequest request , int propertyId){
     User user = (User) getOwnerOrUser(request);
-    if(user==null) throw new UserNotFoundException();
-    if(user !=null) {
-
-      Property property = propertyRepository.findByPropertyId(propertyId);
-      if(property ==null) throw new PropertyNotFoundException();
-
-      List<Favourites> favouritesList = user.getFavPropertyList();
-
-      Favourites favourites = new Favourites();
-      favourites.setProperty(property);
-      favourites.setUser(user);
-      favouritesList.add(favourites);
-      user.setFavPropertyList(favouritesList);
-
-      favouritesRepository.save(favourites);
-      userRepository.save(user);
-      return "added to favourite successfully";
+    if(user==null) {
+      throw new UserNotFoundException();
     }
-    return "some error occurred while addFavourite";
+
+    if(!propertyRepository.existsById(propertyId)) {
+      throw new PropertyNotFoundException();
+    }
+
+    Property property = propertyRepository.findByPropertyId(propertyId);
+
+    if(favouritesRepository.existsByUserAndProperty(user , property)){
+      throw new PropertyAlreadyInFavouriteException();
+    }
+
+    List<Favourites> favouritesList = user.getFavPropertyList();
+
+    Favourites favourites = new Favourites();
+    favourites.setProperty(property);
+    favourites.setUser(user);
+    favouritesList.add(favourites);
+    user.setFavPropertyList(favouritesList);
+
+    favouritesRepository.save(favourites);
+    userRepository.save(user);
+    return mapStructMapper.favouriteToFavouriteDTO(favourites);
+
   }
 
-  public String removeFromFavourite(HttpServletRequest request , int propertyId) throws Exception{
+  public FavouriteDTO removeFromFavourite(HttpServletRequest request , int propertyId){
     User user = (User) getOwnerOrUser(request);
-    if(user==null) throw new UserNotFoundException();
-    if(user!=null){
-      Property property = propertyRepository.findByPropertyId(propertyId);
-      favouritesRepository.deleteByUserAndProperty( user , property);
-      return "remove from favourite list";
+    if(user==null){
+      throw new UserNotFoundException();
     }
-    return "some error occurred while removeFromFavourite";
+
+    if(!propertyRepository.existsById(propertyId)){
+      throw new PropertyNotFoundException();
+    }
+
+    Property property = propertyRepository.findByPropertyId(propertyId);
+
+    if(!favouritesRepository.existsByUserAndProperty(user,property)){
+      throw new PropertyNotExistsInFavouriteException();
+    }
+
+    Favourites favourites = favouritesRepository.findByUserAndProperty(user , property);
+    favouritesRepository.deleteByUserAndProperty( user , property);
+    return mapStructMapper.favouriteToFavouriteDTO(favourites);
+
   }
 
-  public List<AllPropertyDTO> getAllFavourite(HttpServletRequest request) throws Exception {
+  public List<AllPropertyDTO> getAllFavourite(HttpServletRequest request){
     User user = (User) getOwnerOrUser(request);
-    if(user==null) throw new UserNotFoundException();
+    if(user==null){
+      throw new UserNotFoundException();
+    }
     List<Property> propertyList = new ArrayList<>();
-    if(user!=null){
-     List<Favourites> favouritesList = user.getFavPropertyList();
-        for(Favourites favourites : favouritesList){
-          propertyList.add(favourites.getProperty());
-        }
-      return propertyList.stream().map(property -> mapStructMapper.propertyToAllPropertyDto(property)).collect(Collectors.toList());
+
+    List<Favourites> favouritesList = user.getFavPropertyList();
+    for(Favourites favourites : favouritesList){
+      propertyList.add(favourites.getProperty());
     }
-    return null;
+    return propertyList.stream().map(property -> mapStructMapper.propertyToAllPropertyDto(property)).collect(Collectors.toList());
+
   }
 
-  private Object getOwnerOrUser(HttpServletRequest request) throws Exception {
+  private Object getOwnerOrUser(HttpServletRequest request){
     String requestTokenHeader = request.getHeader("Authorization");
     String jwtToken = null;
     String email = null;
 
     if(requestTokenHeader!=null && requestTokenHeader.startsWith("Bearer ")){
       jwtToken = requestTokenHeader.substring(7);
-      try {
-        email = jwtUtil.extractUsername(jwtToken);
-      }catch (Exception e){
-        throw new Exception("User not found");
-      }
+
+      email = jwtUtil.extractUsername(jwtToken);
 
       User user = userRepository.findByEmail(email);
       Owner owner = ownerRepository.findByEmail(email);
+
+      if(user == null && owner==null)
+        throw new UserNotFoundException();
 
       if(user!=null)
         return user;

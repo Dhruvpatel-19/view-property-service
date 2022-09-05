@@ -13,4 +13,8 @@ import org.springframework.stereotype.Repository;
 public interface FavouritesRepository extends JpaRepository<Favourites, Integer> {
 
     void deleteByUserAndProperty(User user, Property property);
+
+    Favourites findByUserAndProperty(User user, Property property);
+
+    boolean existsByUserAndProperty(User user, Property property);
 }
