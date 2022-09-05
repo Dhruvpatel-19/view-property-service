@@ -22,7 +22,12 @@ public class ControllerExceptionHandler {
 
   @ExceptionHandler(value = JwtTokenExpiredException.class)
   public ResponseEntity<Object> jwtTokenExpiredException(JwtTokenExpiredException exception){
-    return new ResponseEntity<>("Jwt Token has beem expired" , HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>("Jwt Token has been expired" , HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(value = JwtSignatureException.class)
+  public ResponseEntity<Object> jwtSignatureException(JwtSignatureException exception){
+    return new ResponseEntity<>("Jwt token is not properly formatted" , HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(value = PropertyAlreadyInFavouriteException.class)

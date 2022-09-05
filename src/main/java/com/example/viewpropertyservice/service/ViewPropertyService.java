@@ -14,6 +14,9 @@ import com.example.viewpropertyservice.repository.FavouritesRepository;
 import com.example.viewpropertyservice.repository.OwnerRepository;
 import com.example.viewpropertyservice.repository.PropertyRepository;
 import com.example.viewpropertyservice.repository.UserRepository;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -129,7 +132,15 @@ public class ViewPropertyService {
     if(requestTokenHeader!=null && requestTokenHeader.startsWith("Bearer ")){
       jwtToken = requestTokenHeader.substring(7);
 
-      email = jwtUtil.extractUsername(jwtToken);
+      try{
+        email = jwtUtil.extractUsername(jwtToken);
+      }catch (ExpiredJwtException e){
+        throw new JwtTokenExpiredException();
+      }catch (SignatureException | MalformedJwtException e){
+        throw new JwtSignatureException();
+      } catch (Exception e){
+        return null;
+      }
 
       User user = userRepository.findByEmail(email);
       Owner owner = ownerRepository.findByEmail(email);

@@ -37,7 +37,8 @@ public class ViewPropertyController {
 
     @Operation(summary = "Add Property To Users Favourite List",description = "This property will be added to users favourite", tags = {"ViewPropertyController"})
     @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Property posted successfully"),
+      @ApiResponse(responseCode = "200", description = "Property added to favourite successfully"),
+      @ApiResponse(responseCode = "208",description = "Property already added"),
       @ApiResponse(responseCode = "400",description = "Bad Request"),
       @ApiResponse(responseCode = "404",description = "Property not found"),
       @ApiResponse(responseCode = "403",description = "Forbidden")
@@ -49,7 +50,7 @@ public class ViewPropertyController {
 
     @Operation(summary = "Remove Property From User Favourite List",description = "This method is used to remove property from favourite.", tags = {"ViewPropertyController"})
     @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Property removed successfully"),
+      @ApiResponse(responseCode = "200", description = "Property removed from favourite successfully"),
       @ApiResponse(responseCode = "400",description = "Bad Request"),
       @ApiResponse(responseCode = "404",description = "Property not found"),
       @ApiResponse(responseCode = "403",description = "Forbidden")
@@ -61,7 +62,7 @@ public class ViewPropertyController {
 
     @Operation(summary = "Get All Favourite Property From User Favourite List",description = "This method is used to get all the favourite property of the user", tags = {"ViewPropertyController"})
     @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Reteived all property successfully"),
+      @ApiResponse(responseCode = "200", description = "Reteived all favourite property successfully"),
       @ApiResponse(responseCode = "400",description = "Bad Request"),
       @ApiResponse(responseCode = "404",description = "Property not found"),
       @ApiResponse(responseCode = "403",description = "Forbidden")
