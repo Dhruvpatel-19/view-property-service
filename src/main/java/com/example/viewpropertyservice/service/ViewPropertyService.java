@@ -58,7 +58,14 @@ public class ViewPropertyService {
   }
 
   public FavouriteDTO addToFavourite(HttpServletRequest request , int propertyId){
-    User user = (User) getOwnerOrUser(request);
+    User user;
+
+    try {
+       user = (User) getOwnerOrUser(request);
+    }catch (Exception e){
+      user = null;
+    }
+
     if(user==null) {
       throw new UserNotFoundException();
     }
@@ -88,7 +95,14 @@ public class ViewPropertyService {
   }
 
   public FavouriteDTO removeFromFavourite(HttpServletRequest request , int propertyId){
-    User user = (User) getOwnerOrUser(request);
+    User user;
+
+    try {
+      user = (User) getOwnerOrUser(request);
+    }catch (Exception e){
+      user = null;
+    }
+
     if(user==null){
       throw new UserNotFoundException();
     }
@@ -110,7 +124,14 @@ public class ViewPropertyService {
   }
 
   public List<AllPropertyDTO> getAllFavourite(HttpServletRequest request){
-    User user = (User) getOwnerOrUser(request);
+    User user;
+
+    try {
+      user = (User) getOwnerOrUser(request);
+    }catch (Exception e){
+      user = null;
+    }
+
     if(user==null){
       throw new UserNotFoundException();
     }
