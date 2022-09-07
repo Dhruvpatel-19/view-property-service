@@ -88,9 +88,5 @@ public class Property {
     @JsonIgnore
     private User user;
 
-    @ManyToMany(targetEntity = User.class)
-    @JoinTable(name = "property_requser" , joinColumns = @JoinColumn(name = "property_id") , inverseJoinColumns = @JoinColumn(name="user_id"))
-    @JsonIgnore
-    private Set<User> reqUsers;
 
 }
