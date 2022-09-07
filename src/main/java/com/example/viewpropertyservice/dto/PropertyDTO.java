@@ -31,5 +31,5 @@ public class PropertyDTO {
     private Type type;
     private Address address;
     private OwnerDTO owner;
-
+    private UserDTO user;
 }

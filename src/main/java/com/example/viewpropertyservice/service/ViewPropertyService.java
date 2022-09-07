@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -167,7 +166,7 @@ public class ViewPropertyService {
       Owner owner = ownerRepository.findByEmail(email);
 
       if(user == null && owner==null)
-        throw new UserNotFoundException();
+        return null;
 
       if(user!=null)
         return user;
